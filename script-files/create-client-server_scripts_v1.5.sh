@@ -16,7 +16,7 @@ fi
 
 if [ "$(systemd-detect-virt)" == "lxc" ]; then
     echo "LXC is not supported (yet)."
-    echo "VPN can technically run in an LXC container,"
+    echo "wireguard can technically run in an LXC container,"
     echo "but the kernel module has to be installed on the host,"
     echo "the container has to be run with some specific parameters"
     echo "and only the tools need to be installed in the container."
@@ -38,10 +38,10 @@ else
     exit 1
 fi
 
-SERVER_PUB_IPV4=$VPN_SERVER_PUB_IP
+SERVER_PUB_IPV4=$wireguard_SERVER_PUB_IP
 echo "SERVER_PUB_IPV4 : " "$SERVER_PUB_IPV4"
 
-SERVER_PUB_NIC=$VPN_SERVER_PUB_NIC
+SERVER_PUB_NIC=$wireguard_SERVER_PUB_NIC
 echo "Public interface : " "$SERVER_PUB_NIC" 
 
 SERVER_WG_NIC="barista0"
@@ -75,66 +75,67 @@ CLIENT3_WG_IPV6="fd42:42:42::4"
 echo "Client3's VPN IPv6 : " "$CLIENT3_WG_IPV6"
 
 CLIENT4_WG_IPV4="10.10.10.5"
-#echo "Client4's VPN IPv4 : " "$CLIENT4_WG_IPV4"
+echo "Client4's VPN IPv4 : " "$CLIENT4_WG_IPV4"
 
 CLIENT4_WG_IPV6="fd42:42:42::5"
-#echo "Client4's VPN IPv6 : " "$CLIENT4_WG_IPV6"
+echo "Client4's VPN IPv6 : " "$CLIENT4_WG_IPV6"
 
 CLIENT5_WG_IPV4="10.10.10.6"
-#echo "Client5's VPN IPv4 : " "$CLIENT5_WG_IPV4"
+echo "Client5's VPN IPv4 : " "$CLIENT5_WG_IPV4"
 
 CLIENT5_WG_IPV6="fd42:42:42::6"
-#echo "Client5's VPN IPv6 : " "$CLIENT5_WG_IPV6"
+echo "Client5's VPN IPv6 : " "$CLIENT5_WG_IPV6"
 
 ENDPOINT="$SERVER_PUB_IPV4:$SERVER_PORT"
 echo "ENDPOINT : " "$ENDPOINT"
 
 
-### 주의) 처음 실행시는 Cloud-Barista가 설치된 machine에서 아래 주석으로 처리된 부분이 실행되어야함.
+### 참고) 처음 실행하여 Cloud-Barista가 구동되는 machine에 wireguard가 한번 설치된 후에는 아래 96~131 라인은 주석처리해도됨.
 # Install VPN tools and module
-# if [[ "$OS" = 'ubuntu' ]]; then
-#     echo "# apt update"
-#     sudo apt update
 
-#     echo "# apt -y install software-properties-common dirmngr apt-transport-https lsb-release ca-certificates"
-#     sudo apt -y install software-properties-common dirmngr apt-transport-https lsb-release ca-certificates
-    
-#     echo "# add-apt-repository -y ppa:VPN/VPN"
-#     sudo add-apt-repository -y ppa:VPN/VPN
-    
-#     echo "# apt-get update"
-#     sudo apt-get update
-    
-#     echo "# apt-get install ~~~ "
-#     sudo apt-get install "linux-headers-$(uname -r)"
-    
-#     echo "#apt-get install -y VPN iptables resolvconf"
-#     sudo apt-get install -y VPN iptables resolvconf
+if [[ "$OS" = 'ubuntu' ]]; then
+    echo "# apt update"
+    sudo apt update
 
-# elif [[ "$OS" = 'debian' ]]; then
-#     echo "deb http://deb.debian.org/debian/ unstable main" > /etc/apt/sources.list.d/unstable.list
-#     printf 'Package: *\nPin: release a=unstable\nPin-Priority: 90\n' > /etc/apt/preferences.d/limit-unstable
-#     sudo apt update
-#     sudo apt-get install "linux-headers-$(uname -r)"
-#     sudo apt install VPN iptables resolvconf
-# elif [[ "$OS" = 'fedora' ]]; then
-#     dnf copr enable jdoss/VPN
-#     dnf install VPN-dkms VPN-tools iptables
-# elif [[ "$OS" = 'centos' ]]; then
-#     curl -Lo /etc/yum.repos.d/VPN.repo https://copr.fedorainfracloud.org/coprs/jdoss/VPN/repo/epel-7/jdoss-VPN-epel-7.repo
-#     yum install epel-release
-#     yum install VPN-dkms VPN-tools iptables
-# elif [[ "$OS" = 'arch' ]]; then
-#     pacman -S linux-headers
-#     pacman -S VPN-tools iptables VPN-arch
-# fi
+    echo "# apt -y install software-properties-common dirmngr apt-transport-https lsb-release ca-certificates"
+    sudo apt -y -q install software-properties-common dirmngr apt-transport-https lsb-release ca-certificates
+    
+    echo "# add-apt-repository -y ppa:wireguard/wireguard"
+    sudo add-apt-repository -y ppa:wireguard/wireguard
+    
+    echo "# apt-get update"
+    sudo apt-get update
+    
+    echo "# apt-get install ~~~ "
+    sudo apt-get install -y -q "linux-headers-$(uname -r)"
+    
+    echo "#apt-get install -y wireguard iptables resolvconf"
+    sudo apt-get install -y -q wireguard iptables resolvconf
+
+elif [[ "$OS" = 'debian' ]]; then
+    echo "deb http://deb.debian.org/debian/ unstable main" > /etc/apt/sources.list.d/unstable.list
+    printf 'Package: *\nPin: release a=unstable\nPin-Priority: 90\n' > /etc/apt/preferences.d/limit-unstable
+    sudo apt update
+    sudo apt-get install "linux-headers-$(uname -r)"
+    sudo apt install wireguard iptables resolvconf
+elif [[ "$OS" = 'fedora' ]]; then
+    dnf copr enable jdoss/wireguard
+    dnf install wireguard-dkms wireguard-tools iptables
+elif [[ "$OS" = 'centos' ]]; then
+    curl -Lo /etc/yum.repos.d/wireguard.repo https://copr.fedorainfracloud.org/coprs/jdoss/wireguard/repo/epel-7/jdoss-wireguard-epel-7.repo
+    yum install epel-release
+    yum install wireguard-dkms wireguard-tools iptables
+elif [[ "$OS" = 'arch' ]]; then
+    pacman -S linux-headers
+    pacman -S wireguard-tools iptables wireguard-arch
+fi
 
 
 
 # Make sure the directory exists (this does not seem the be the case on fedora)
-sudo mkdir /etc/VPN > /dev/null 2>&1
+sudo mkdir /etc/wireguard > /dev/null 2>&1
 
-echo "### Start to generate VPN keys!!"
+echo "### Start to generate wireguard keys!!"
 umask 077
 
 # Generate key pair for the server
