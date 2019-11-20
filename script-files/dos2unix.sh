@@ -1,6 +1,6 @@
 #!/bin/sh
 sudo apt install -y dos2unix
-sudo chmod 777 * ./*.sh
+sudo chmod 777 ./*.sh
 sudo dos2unix ./*.sh
 
 sudo chmod 777 ./client-install/*.sh
