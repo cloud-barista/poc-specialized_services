@@ -1,3 +1,7 @@
+# ############################################################################### 
+# 문의처 : innodreamer@gmail.com
+# 참고 사이트) https://github.com/angristan/wireguard-install
+# ###############################################################################
 #!/bin/bash
 echo "Start the script!!"
 
@@ -86,7 +90,7 @@ ENDPOINT="$SERVER_PUB_IPV4:$SERVER_PORT"
 echo "ENDPOINT : " "$ENDPOINT"
 
 
-
+### 주의) 처음 실행시는 Cloud-Barista가 설치된 machine에서 아래 주석으로 처리된 부분이 실행되어야함.
 # Install VPN tools and module
 # if [[ "$OS" = 'ubuntu' ]]; then
 #     echo "# apt update"
