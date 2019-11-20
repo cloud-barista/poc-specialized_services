@@ -97,7 +97,7 @@ if [[ "$OS" = 'ubuntu' ]]; then
     echo "# apt update"
     sudo apt update
 
-    echo "# apt -y install software-properties-common dirmngr apt-transport-https lsb-release ca-certificates"
+    echo "# apt -y -q install software-properties-common dirmngr apt-transport-https lsb-release ca-certificates"
     sudo apt -y -q install software-properties-common dirmngr apt-transport-https lsb-release ca-certificates
     
     echo "# add-apt-repository -y ppa:wireguard/wireguard"
@@ -109,7 +109,7 @@ if [[ "$OS" = 'ubuntu' ]]; then
     echo "# apt-get install ~~~ "
     sudo apt-get install -y -q "linux-headers-$(uname -r)"
     
-    echo "#apt-get install -y wireguard iptables resolvconf"
+    echo "# apt-get install -y -q wireguard iptables resolvconf"
     sudo apt-get install -y -q wireguard iptables resolvconf
 
 elif [[ "$OS" = 'debian' ]]; then
